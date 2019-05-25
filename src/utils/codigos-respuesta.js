@@ -25,6 +25,15 @@ const baseDatosDesconectada = () => {
     }
 }
 
+const imposibleInsertarEnBd = () => {
+    return {
+        response: undefined,
+        error: {
+            id: 50
+        }
+    }
+}
+
 const usuarioCorrectoAcceso1 = () => {
     return {
         response: {
@@ -64,5 +73,6 @@ module.exports = {
     usuarioIncorrecto,
     usuarioCorrectoAcceso1,
     usuarioCorrectoAcceso2,
-    usuarioCorrectoAcceso3
+    usuarioCorrectoAcceso3,
+    imposibleInsertarEnBd
 }

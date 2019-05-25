@@ -10,25 +10,35 @@ const databaseName = 'NotasPoli'
 //recibe el body objeto mandado y el userAgent
 const logeo = ({ usuario, contra } = {}, userAgent, callback) => {
     if (usuario && contra) {
-
-        buscarUser(usuario, contra, (error, usuario) => {
+        buscarUser(usuario, contra, (error, usuarioInterno) => {
 
             if (error) {
-
+                //console.log(error)
                 return callback(codRespuesta.baseDatosDesconectada())
             }
-
-            if (!usuario) {
+            if (!usuarioInterno) {
                 return callback(codRespuesta.usuarioIncorrecto())
             } else {
-                registrarIngreso(usuario, contra, userAgent, () => {
-                    return callback(asignarTipoIngreso(usuario.nivelAcceso))
+                //console.log(usuario, contra, userAgent)
+                registrarIngreso(usuario, contra, userAgent, (error, client) => {
+                    //console.log(error)
+                    if (error) {
+                        return callback(codRespuesta.imposibleInsertarEnBd())
+                    } else {
+                        if (client) {
+                            console.log(usuarioInterno)
+                                //usuarioInterno
+                            return callback(asignarTipoIngreso(usuarioInterno.response.accesso))
+                        } else {
+                            //console.log('no encontro el usuario a actualizar')
+                            return callback({ hi: '3234' })
+                        }
+                    }
                 })
             }
 
         })
     } else {
-
         return callback(codRespuesta.faltanParametros())
     }
 }
@@ -37,13 +47,21 @@ const buscarUser = (usuario, contra, callback) => {
     MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
 
         if (error) {
-            return callback(error, undefined)
+            return callback(error, null)
         } else {
             const db = client.db(databaseName)
 
             db.collection('usuarios').findOne({ identificador: usuario, clave: contra }, (error, usuario) => {
+                if (error) {
+                    return callback(codRespuesta.imposibleInsertarEnBd(), null);
+                } else {
+                    if (usuario) {
+                        return callback(null, asignarTipoIngreso(usuario.nivelAcceso))
+                    } else {
+                        return callback(null, null)
+                    }
+                }
 
-                return callback(error, usuario);
             })
         }
     })
@@ -52,13 +70,17 @@ const buscarUser = (usuario, contra, callback) => {
 const registrarIngreso = (usuario, contra, userAgent, callback) => {
     MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
         if (error) {
-            return callback(error, undefined)
+            return callback(error, null)
         } else {
             const db = client.db(databaseName)
-            console.log(userAgent)
+                //console.log(usuario, contra, userAgent)
+
             db.collection('usuarios').updateOne({ identificador: usuario, clave: contra }, {
-                userAgent: userAgent
+                $set: {
+                    userAgent
+                }
             }, (error, usuario) => {
+
                 return callback(error, usuario);
             })
         }
@@ -67,7 +89,7 @@ const registrarIngreso = (usuario, contra, userAgent, callback) => {
 }
 
 const asignarTipoIngreso = (tipoAcceso) => {
-    console.log(tipoAcceso)
+
     if (tipoAcceso === 1) {
         return codRespuesta.usuarioCorrectoAcceso1()
     } else if (tipoAcceso === 2) {
