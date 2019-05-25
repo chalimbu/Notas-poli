@@ -64,6 +64,15 @@ const usuarioCorrectoAcceso3 = () => {
     }
 }
 
+const operacionCorrecta = () => {
+    return {
+        response: {
+            id: 10
+        },
+        error: undefined
+    }
+}
+
 
 
 module.exports = {
@@ -74,5 +83,6 @@ module.exports = {
     usuarioCorrectoAcceso1,
     usuarioCorrectoAcceso2,
     usuarioCorrectoAcceso3,
-    imposibleInsertarEnBd
+    imposibleInsertarEnBd,
+    operacionCorrecta
 }

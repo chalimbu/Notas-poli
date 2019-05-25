@@ -26,4 +26,14 @@ app.post('/login', function(req, res) {
     })
 })
 
+app.post('/cerrar-seccion', function(req, res) {
+    // //console.log(req.body)
+    // login.logeo(req.body, req.headers['user-agent'], (envio) => {
+    //     res.send(envio);
+    // })
+    login.deslogeoControl(req.body, (envio) => {
+        res.send(envio)
+    })
+})
+
 app.listen(3000);

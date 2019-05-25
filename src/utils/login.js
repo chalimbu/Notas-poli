@@ -98,8 +98,41 @@ const asignarTipoIngreso = (tipoAcceso) => {
         return codRespuesta.usuarioCorrectoAcceso3()
     }
 }
+const deslogeoControl = ({ usuario: identificador } = {}, callback) => {
+    console.log(identificador)
+    if (typeof identificador === 'undefined') {
+        return callback(codRespuesta.faltanParametros())
+    }
+    deslogeo(identificador, (error, usuario) => {
+        if (error) {
+            return callback(codRespuesta.imposibleInsertarEnBd());
+        }
+        return callback(codRespuesta.operacionCorrecta());
+    })
+}
+
+const deslogeo = (identificador, callback) => {
+    MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
+        if (error) {
+            return callback(error, null)
+        } else {
+            const db = client.db(databaseName)
+                //console.log(usuario, contra, userAgent)
+
+            db.collection('usuarios').updateOne({ identificador }, {
+                $set: {
+                    userAgent: 'cerrado'
+                }
+            }, (error, usuario) => {
+
+                return callback(error, usuario);
+            })
+        }
+    })
+}
 
 
 module.exports = {
-    logeo
+    logeo,
+    deslogeoControl
 }
