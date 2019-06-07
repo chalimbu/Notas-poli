@@ -1,16 +1,30 @@
 {
-  "name": "notas-poli-pi",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.0",
-    "mongodb": "^3.2.5",
-    "path": "^0.12.7"
-  }
+    "name": "notas-poli-pi",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "node src/index.js",
+        "dev": "env-cmd ./config/dev.env nodemon src/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/chalimbu/Notas-poli.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/chalimbu/Notas-poli/issues"
+    },
+    "homepage": "https://github.com/chalimbu/Notas-poli#readme",
+    "devDependencies": {
+        "env-cmd": "^8.0.2",
+        "nodemon": "^1.18.9"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "express": "^4.16.4",
+        "mongoose": "^5.3.16",
+        "validator": "^10.9.0"
+    }
 }
