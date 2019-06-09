@@ -1,7 +1,7 @@
 const express = require('express')
 const Usuario = require('../models/usuarios')
 const auth = require('../midleware/auth')
-
+    //da
 const router = new express.Router()
 
 router.post('/usuarios/login', async(req, res) => {
