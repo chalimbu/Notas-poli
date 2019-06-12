@@ -1,5 +1,7 @@
 const Usuario = require('../models/usuarios')
+const PlanillaDigital = require('../models/planillaDigital')
 const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose')
 const cargarDb = async() => {
     //crear los usuarios 6 usuarios, admins,1 profesor(2 grupos), 5 estudiatn
     var plantillaUsuario = {
@@ -26,20 +28,39 @@ const cargarDb = async() => {
         await Usuario.guardarOActualizar(plantillaUsuario)
     }
 
+    var planilaDigital = {
+        nombreMateria: 'Fisica del movimiento',
+        codigoMateria: 'FIS-001',
+        grupo: 1,
+        docente: 2001,
+    }
+    await PlanillaDigital.crearSiNoExiste(planilaDigital)
+    const planillaCreada = await PlanillaDigital.findOne({ codigoMateria: 'FIS-001', grupo: 1 })
+    await planillaCreada.populate('docente').execPopulate()
+    await planillaCreada.addStudent(100)
+    await planillaCreada.addStudent(101)
+    await planillaCreada.addStudent(102)
+    await planillaCreada.addStudent(103)
 
 
+    var planilaDigital = {
+        nombreMateria: 'Programacion y algoritmos',
+        codigoMateria: 'ING-003',
+        grupo: 2,
+        docente: 2001,
+    }
+    await PlanillaDigital.crearSiNoExiste(planilaDigital)
+    const planillaCreada2 = await PlanillaDigital.findOne({ codigoMateria: 'ING-003', grupo: 2 })
+        //await planillaCreada.populate('docente').execPopulate()
+    await planillaCreada2.addStudent(100)
+    await planillaCreada2.addStudent(101)
+    await planillaCreada2.addStudent(102)
+    await planillaCreada2.addStudent(104)
 
-    // const usuario = await Usuario.findOne({ id: 3001 })
-    // console.log(usuario)
-    // const planilla = new PlanillaDigital({
-    //     nombreMateria: 'biologia',
-    //     codigoMateria: 'bca-830',
-    //     grupo: 3,
-    //     docente: usuario._id,
-    //     encabezadoNotas: ['parcial1', 'parcial2']
-    // })
-    // await planilla.save()
-    console.log(await bcrypt.compare('sebas', await bcrypt.hash('sebas', 8)))
+
+    //console.log(planillaCreada.encabezadoNotas.length)
+    //console.log(JSON.stringify(planillaCreada, undefined, 2))
+    //console.log(await bcrypt.compare('sebas', await bcrypt.hash('sebas', 8)))
 }
 
 module.exports = cargarDb

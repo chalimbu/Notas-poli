@@ -26,6 +26,7 @@
         "express": "^4.16.4",
         "jsonwebtoken": "^8.4.0",
         "mongoose": "^5.3.16",
+        "multer": "^1.4.1",
         "validator": "^10.9.0"
     }
 }

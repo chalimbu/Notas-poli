@@ -2,6 +2,7 @@ const express = require('express')
 require("./db/mongoose")
 
 const usuarioRouter = require('./routers/usuario')
+const administradorRouter = require('./routers/administrador')
 
 
 const cargarAplicacionRouter = require('./temporales/routerCargarDb')
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 });
 app.use(usuarioRouter)
 app.use(cargarAplicacionRouter)
+app.use(administradorRouter)
 
 app.listen(port, () => {
     console.log('Servidor up en puerto ' + port)

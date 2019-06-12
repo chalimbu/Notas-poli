@@ -43,10 +43,12 @@ const usuarioSchema = new mongoose.Schema({
 })
 
 usuarioSchema.statics.guardarOActualizar = async(usuario) => {
+    //console.log('hi from su')
     const user = await Usuario.findOne({ id: usuario.id })
     if (user) {
         return await Usuario.actualizar(user, usuario)
     }
+
     const usuario1 = new Usuario(usuario)
     await usuario1.save()
 
@@ -77,7 +79,7 @@ usuarioSchema.statics.encontrarPorIdCorreo = async(id, clave) => {
     }
     //limpia y generada
     const isMatch = await bcrypt.compare(clave, user.clave)
-    console.log(isMatch)
+        //console.log(isMatch)
     if (!isMatch) {
         throw new Error('Unable to log in')
     } else {
@@ -85,6 +87,29 @@ usuarioSchema.statics.encontrarPorIdCorreo = async(id, clave) => {
         return user
     }
 
+}
+usuarioSchema.statics.cargaMasiva = async(usuarios) => {
+    var errores = 0
+    var correctos = 0
+    var resultados = []
+    for (i = 0; i < usuarios.length; i++) {
+        //console.log(usuarios[i])
+        if (usuarios[i].nombre && usuarios[i].id && usuarios[i].clave && usuarios[i].correo && usuarios[i].nivelAcceso) {
+            try {
+                await Usuario.guardarOActualizar(usuarios[i])
+                correctos++
+            } catch (e) {
+                errores++
+                resultados.push({ id: 3, info: 'el elemento ' + i + ' fallo en las validaciones para guardado' })
+            }
+        } else {
+            errores++
+            resultados.push({ id: 3, info: 'al elemento ' + i + ' le faltan parametros para crear usuario(nombre,id,clave,correo,nivelAcceso)' })
+        }
+    }
+    resultados.push({ id: 1, info: 'se realizaron ' + correctos + ' operaciones correctas' })
+    resultados.push({ id: 2, info: 'no se pudieron realizar ' + errores + ' operaciones' })
+    return resultados
 }
 
 usuarioSchema.methods.generarTokenAutentificacion = async function() {
@@ -106,6 +131,19 @@ usuarioSchema.methods.toJSON = function() {
     const user = this
     const userObject = user.toObject()
         //console.log(userObject)
+
+    switch (userObject.nivelAcceso) {
+        case 3:
+            userObject.perfil = 'Administrador'
+            break;
+
+        case 2:
+            userObject.perfil = 'docente';
+            break;
+
+        default:
+            userObject.perfil = 'estudiante'
+    }
 
     delete userObject.clave
     delete userObject.tokens
