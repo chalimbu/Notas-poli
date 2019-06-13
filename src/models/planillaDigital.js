@@ -1,6 +1,5 @@
-const mongoose = require('mongoose')
 const Usuario = require('../models/usuarios')
-
+const mongoose = require('mongoose')
 
 const planillaDigitalSchema = new mongoose.Schema({
     nombreMateria: {
@@ -114,6 +113,35 @@ planillaDigitalSchema.statics.cargaMasiva = async(planillas) => {
     return resultados
 }
 
+planillaDigitalSchema.statics.obtenerMateriasMatriculadas = async(usuario) => {
+    const id = usuario._id
+        //console.log(id)
+    const materiasMatriculadas = []
+    const planilllasTodas = await PlanillaDigital.find({})
+        //console.log(planilllasTodas)
+    for (i = 0; i < planilllasTodas.length; i++) {
+        planilla = planilllasTodas[i]
+            //console.log(planilla)
+        for (j = 0; j < planilla.notas.length; j++) {
+            if (planilla.notas[j].nota.estudiante.equals(id)) {
+                materiasMatriculadas.push(planilla)
+            }
+        }
+    }
+    console.log(materiasMatriculadas)
+    for (i = 0; i < materiasMatriculadas.length; i++) {
+        materiasMatriculadas[i].encabezadoNotas = []
+        materiasMatriculadas[i].notas = []
+        materiasMatriculadas[i].encabezadoNotas = undefined
+        materiasMatriculadas[i].notas = undefined
+        await materiasMatriculadas[i].populate('docente').execPopulate()
+    }
+    console.log(materiasMatriculadas)
+        //await
+        //console.log(materias_matriculadas)
+    return materiasMatriculadas
+}
+
 planillaDigitalSchema.methods.addStudent = async function(id) {
     const planilla = this
     var existeEstudianteEnPlanilla = false
@@ -142,7 +170,26 @@ planillaDigitalSchema.methods.addStudent = async function(id) {
         await planilla.save()
     }
 }
-
+planillaDigitalSchema.statics.obtenerNotasEstudiante = async(usuario, idPlanilla) => {
+    //console.log('entro')
+    const id = usuario._id
+    const planilla = await PlanillaDigital.findOne({ _id: idPlanilla })
+        ///console.log(planilla)
+    if (!planilla) {
+        return null
+    } else {
+        console.log(planilla.notas)
+        planilla.notas = planilla.notas.filter((myNota) => {
+            return myNota.nota.estudiante.equals(usuario._id)
+        })
+        console.log(planilla.notas)
+        if (planilla.notas.length === 0) { //el usuario no le corresponde a esta planilla
+            return null
+        }
+        return planilla
+            //.nota.estudiante.equals(estudiante._id)
+    }
+}
 
 const PlanillaDigital = mongoose.model('PlanillaDigital', planillaDigitalSchema)
 

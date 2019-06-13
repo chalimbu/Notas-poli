@@ -1,7 +1,8 @@
 const Usuario = require('../models/usuarios')
 const PlanillaDigital = require('../models/planillaDigital')
-const bcrypt = require('bcryptjs')
-const mongoose = require('mongoose')
+    //const bcrypt = require('bcryptjs')
+    //const mongoose = require('mongoose')
+
 const cargarDb = async() => {
     //crear los usuarios 6 usuarios, admins,1 profesor(2 grupos), 5 estudiatn
     var plantillaUsuario = {
@@ -34,6 +35,7 @@ const cargarDb = async() => {
         grupo: 1,
         docente: 2001,
     }
+
     await PlanillaDigital.crearSiNoExiste(planilaDigital)
     const planillaCreada = await PlanillaDigital.findOne({ codigoMateria: 'FIS-001', grupo: 1 })
     await planillaCreada.populate('docente').execPopulate()
@@ -57,10 +59,9 @@ const cargarDb = async() => {
     await planillaCreada2.addStudent(102)
     await planillaCreada2.addStudent(104)
 
+    const usuario = await Usuario.findOne({ id: 101 })
+        //console.log(usuario)
+    console.log(await PlanillaDigital.obtenerMateriasMatriculadas(usuario))
 
-    //console.log(planillaCreada.encabezadoNotas.length)
-    //console.log(JSON.stringify(planillaCreada, undefined, 2))
-    //console.log(await bcrypt.compare('sebas', await bcrypt.hash('sebas', 8)))
 }
-
 module.exports = cargarDb

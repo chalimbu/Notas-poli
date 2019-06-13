@@ -1,7 +1,9 @@
+//const PlanillaDigital = require('./planillaDigital')
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+
 
 const usuarioSchema = new mongoose.Schema({
     nombre: {
@@ -51,7 +53,6 @@ usuarioSchema.statics.guardarOActualizar = async(usuario) => {
 
     const usuario1 = new Usuario(usuario)
     await usuario1.save()
-
 
 }
 
