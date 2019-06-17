@@ -24,25 +24,26 @@ const upload = multer({
 
 router.post('/admin/cargaUsuarios', authAdmin, upload.single('usuarios'), async(req, res) => {
 
-    if (typeof req.file === 'undefined') {
-        return await res.status(400).send({ error: 'falta el archivo' })
-    }
-    try {
-        console.log(String(req.file.buffer))
-        const jsonString = String(req.file.buffer)
-        const jsonObject = await JSON.parse(jsonString);
-        console.log(jsonObject.length);
-        if (jsonObject.length) {
-            res.send(await Usuario.cargaMasiva(jsonObject))
-        } else {
-            return res.status(400).send({ erro: 'deber ser un array con los datos' })
-        }
-    } catch (e) {
-        console.log(e)
-        return res.status(400).send({ error: 'no json valido:' + e })
-    }
-    // req.user.avatar = buffer
-    // await req.user.save()
+    res.send({ req })
+        // if (typeof req.file === 'undefined') {
+        //     return await res.status(400).send({ error: 'falta el archivo' })
+        // }
+        // try {
+        //     console.log(String(req.file.buffer))
+        //     const jsonString = String(req.file.buffer)
+        //     const jsonObject = await JSON.parse(jsonString);
+        //     console.log(jsonObject.length);
+        //     if (jsonObject.length) {
+        //         res.send(await Usuario.cargaMasiva(jsonObject))
+        //     } else {
+        //         return res.status(400).send({ erro: 'deber ser un array con los datos' })
+        //     }
+        // } catch (e) {
+        //     console.log(e)
+        //     return res.status(400).send({ error: 'no json valido:' + e })
+        // }
+        // // req.user.avatar = buffer
+        // // await req.user.save()
 
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
