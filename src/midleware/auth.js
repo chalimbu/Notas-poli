@@ -52,4 +52,21 @@ const authEstudiante = async(req, res, next) => {
     }
 }
 
-module.exports = { auth, authAdmin, authEstudiante }
+const authDocente = async(req, res, next) => {
+    try {
+        const token = req.header('Authorization').replace('Bearer ', '')
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await Usuario.findOne({ _id: decoded._id, 'tokens.token': token, nivelAcceso: 2 })
+
+        if (!user) {
+            throw new Error('.')
+        }
+        req.token = token
+        req.usuario = user
+        next()
+    } catch (e) {
+        res.status(401).send({ error: 'favor logearse.' })
+    }
+}
+
+module.exports = { auth, authAdmin, authEstudiante, authDocente }

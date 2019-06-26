@@ -4,6 +4,7 @@ require("./db/mongoose")
 const usuarioRouter = require('./routers/usuario')
 const administradorRouter = require('./routers/administrador')
 const estudianteRouter = require('./routers/estudiante')
+const docenteRouter = require('./routers/docente')
 
 
 const cargarAplicacionRouter = require('./temporales/routerCargarDb')
@@ -23,6 +24,7 @@ app.use(usuarioRouter)
 app.use(cargarAplicacionRouter)
 app.use(administradorRouter)
 app.use(estudianteRouter)
+app.use(docenteRouter)
 
 app.listen(port, () => {
     console.log('Servidor up en puerto ' + port)

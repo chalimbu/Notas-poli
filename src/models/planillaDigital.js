@@ -21,6 +21,10 @@ const planillaDigitalSchema = new mongoose.Schema({
         required: true,
         ref: 'Usuario'
     },
+    creada: {
+        type: Boolean,
+        default: false
+    },
     encabezadoNotas: [{
         encabezado: {
             id: {
@@ -142,6 +146,33 @@ planillaDigitalSchema.statics.obtenerMateriasMatriculadas = async(usuario) => {
     return materiasMatriculadas
 }
 
+planillaDigitalSchema.statics.obtenerMateriasDicta = async(usuario) => {
+    const id = usuario._id
+        //console.log(id)
+    const materiasMatriculadas = []
+    const planilllasTodas = await PlanillaDigital.find({})
+        //console.log(planilllasTodas)
+    for (i = 0; i < planilllasTodas.length; i++) {
+        planilla = planilllasTodas[i]
+        if (planilla.docente.equals(id)) {
+            materiasMatriculadas.push(planilla)
+        }
+
+    }
+    //console.log(materiasMatriculadas)
+    for (i = 0; i < materiasMatriculadas.length; i++) {
+        materiasMatriculadas[i].encabezadoNotas = []
+        materiasMatriculadas[i].notas = []
+        materiasMatriculadas[i].encabezadoNotas = undefined
+        materiasMatriculadas[i].notas = undefined
+        await materiasMatriculadas[i].populate('docente').execPopulate()
+    }
+    console.log(materiasMatriculadas)
+        //await
+        //console.log(materias_matriculadas)
+    return materiasMatriculadas
+}
+
 planillaDigitalSchema.methods.addStudent = async function(id) {
     const planilla = this
     var existeEstudianteEnPlanilla = false
@@ -170,6 +201,62 @@ planillaDigitalSchema.methods.addStudent = async function(id) {
         await planilla.save()
     }
 }
+
+planillaDigitalSchema.methods.cambiarNota = async function(idEstudiante, numeroNota, nota) {
+    if (nota > 5 || nota < 0) {
+        throw new Error('La nota debe estar entre 0 y 5')
+    }
+    const planilla = this
+    for (j = 0; j < planilla.notas.length; j++) {
+        if (planilla.notas[j].nota.estudiante.equals(idEstudiante)) {
+            console.log(planilla.notas[j].nota.calificacion.length + " " + numeroNota)
+            if (numeroNota <= planilla.notas[j].nota.calificacion.length) {
+                // console.log(planilla.notas[j].nota.calificacion[numeroNota - 1])
+                // planilla.notas[j].nota.calificacion[numeroNota - 1] = nota
+                planilla.notas[j].nota.calificacion.set(numeroNota - 1, nota);
+                // console.log(planilla.notas[j].nota.calificacion[numeroNota - 1])
+                // console.log(planilla.notas[j].nota.calificacion)
+            } else {
+                throw new Error('La nota en la poscisio ' + numeroNota + ' no existe')
+            }
+        }
+    }
+    await planilla.save()
+}
+planillaDigitalSchema.methods.popularEstudiantes = async function() {
+    planilla = this
+    for (var i = 0; i < planilla.notas.length; i++) {
+        await planilla.populate('notas.' + i + '.nota.estudiante').execPopulate()
+    }
+    console.log(JSON.stringify(planilla, null, 4));
+    return planilla
+}
+planillaDigitalSchema.methods.creandoActividadesEvaluativas = async function(actividades) {
+    planilla = this
+    console.log(actividades)
+    var sumaPorcentajes = 0;
+    for (var i = 0; i < actividades.length; i++) {
+        //console.log(usuarios[i])
+        if (actividades[i].nombre && actividades[i].porcentaje) {
+            sumaPorcentajes += actividades[i].porcentaje
+        } else {
+            throw new Error('Todas las actividades requieren nombre y porcentaje')
+        }
+    }
+    if (sumaPorcentajes === 50) {
+        for (var i = 0; i < actividades.length; i++) {
+            const encabezado1 = { encabezado: { id: 3 + i, nombre: actividades[i].nombre, porcentaje: actividades[i].porcentaje } }
+            planilla.encabezadoNotas.push(encabezado1)
+            for (var j = 0; j < planilla.notas.length; j++) {
+                planilla.notas[j].nota.calificacion.push(0)
+            }
+        }
+        planilla.creada = true
+        await planilla.save()
+    } else {
+        throw new Error('La suma de porcentaje debe ser 50%')
+    }
+}
 planillaDigitalSchema.statics.obtenerNotasEstudiante = async(usuario, idPlanilla) => {
     //console.log('entro')
     const id = usuario._id
@@ -186,10 +273,18 @@ planillaDigitalSchema.statics.obtenerNotasEstudiante = async(usuario, idPlanilla
         if (planilla.notas.length === 0) { //el usuario no le corresponde a esta planilla
             return null
         }
+        debugger
+        await planilla.populate('docente').execPopulate()
+        debugger
+        for (var i = 0; i < planilla.notas.length; i++) {
+            await planilla.populate('notas.' + i + '.nota.estudiante').execPopulate()
+        }
         return planilla
             //.nota.estudiante.equals(estudiante._id)
     }
 }
+
+
 
 const PlanillaDigital = mongoose.model('PlanillaDigital', planillaDigitalSchema)
 

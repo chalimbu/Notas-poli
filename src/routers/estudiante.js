@@ -18,6 +18,7 @@ router.get('/estudiante/materias', authEstudiante, async(req, res) => {
 })
 
 router.get('/estudiante/materias/:id', authEstudiante, async(req, res) => {
+    debugger
     const _id = req.params.id
         //console.log(_id)
         //console.log(req.usuario)
@@ -29,6 +30,7 @@ router.get('/estudiante/materias/:id', authEstudiante, async(req, res) => {
         }
         res.send(planilla)
     } catch (e) {
+        console.log(e)
         res.status(500).send(e)
     }
 })
