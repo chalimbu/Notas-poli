@@ -1,6 +1,7 @@
 const { authAdmin } = require('../midleware/auth')
 const Usuario = require('../models/usuarios')
 const PlanillaDigital = require('../models/planillaDigital')
+const mail = require('../utils/correo')
 var util = require('util')
 
 const express = require('express')
@@ -84,7 +85,22 @@ router.delete('/admin/eliminarTodo', authAdmin, async(req, res) => {
     res.status(400).send({ error: error.message })
 })
 
-
+router.post('/admin/enviarCorreos', authAdmin, async(req, res) => {
+    const usuariosNoAdmin = await Usuario.find({ nivelAcceso: { $ne: 3 } })
+    var enviarCorrectos = 0
+    var enviarIncorrecto = 0
+    for (i = 0; i < usuariosNoAdmin.length; i++) {
+        try {
+            mail(usuariosNoAdmin[i])
+            enviarCorrectos++
+        } catch (e) {
+            enviarIncorrecto++
+        }
+    }
+    res.send({ enviarCorrectos, enviarIncorrecto })
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
 
 
 module.exports = router
