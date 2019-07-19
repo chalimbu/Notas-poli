@@ -1,0 +1,8 @@
+[{"nombre":"miguel","id":101,"clave":"12345","correo":"sebastian_zapata82151@elpoli.edu.co","nivelAcceso":1},
+{"nombre":"pablo","id":102,"clave":"12345","correo":"juan_garcia82151@elpoli.edu.co","nivelAcceso":1},
+{"nombre":"felipe","id":103,"clave":"12345","correo":"miguel@correo.com","nivelAcceso":1},
+{"nombre":"carlos","id":104,"clave":"12345","correo":"miguel@correo.com","nivelAcceso":1},
+{"nombre":"gilberto","id":105,"clave":"12345","correo":"miguel@correo.com","nivelAcceso":1},
+{"nombre":"antonio","id":107,"clave":"12345","correo":"miguel@correo.com","nivelAcceso":1},
+{"nombre":"oscar","id":2001,"clave":"12345","correo":"sebastian_zapata82151@elpoli.edu.co","nivelAcceso":2},
+{"nombre":"antonio","id":2002,"clave":"12345","correo":"juan_garcia82151@elpoli.edu.co","nivelAcceso":2}]

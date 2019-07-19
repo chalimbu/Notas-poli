@@ -24,17 +24,10 @@ const upload = multer({
     }
 })
 
-router.post('/admin/cargaUsuarios', authAdmin, upload.single('usuarios'), async(req, res) => {
-    console.log(util.inspect(req))
-        //res.send(util.inspect(req))
-    if (typeof req.file === 'undefined') {
-        return await res.status(400).send({ error: 'falta el archivo' })
-    }
+router.post('/admin/cargaUsuarios', authAdmin, async(req, res) => {
+
     try {
-        //console.log(String(req.file.buffer))
-        const jsonString = String(req.file.buffer)
-        const jsonObject = await JSON.parse(jsonString);
-        //console.log(jsonObject.length);
+        const jsonObject = req.body;
         if (jsonObject.length) {
             res.send(await Usuario.cargaMasiva(jsonObject))
         } else {
@@ -53,13 +46,8 @@ router.post('/admin/cargaUsuarios', authAdmin, upload.single('usuarios'), async(
 
 router.post('/admin/cargaMatriculas', authAdmin, upload.single('matriculas'), async(req, res) => {
 
-    if (typeof req.file === 'undefined') {
-        return await res.status(400).send({ error: 'falta el archivo' })
-    }
     try {
-        //console.log(String(req.file.buffer))
-        const jsonString = String(req.file.buffer)
-        const jsonObject = await JSON.parse(jsonString);
+        const jsonObject = req.body
         console.log(jsonObject.length);
         if (jsonObject.length) {
             res.send(await PlanillaDigital.cargaMasiva(jsonObject))
